@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#e5502f">
+<title>Track your order · pizzatime</title>
+<meta name="description" content="Live order tracker for pizzatime (a fictional pizza brand): watch your pizza bake, get boxed and ride across the map to your door.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tracker.css">
+<script>document.documentElement.classList.add('js');</script>
+<script type="importmap">{"imports":{"three":"./vendor/three/build/three.module.js","three/addons/":"./vendor/three/jsm/"}}</script>
+<link rel="modulepreload" href="js/tracker.js">
+<script type="module" src="js/tracker.js"></script>
+</head>
+<body>
+<a class="skip" href="#tracker">Skip to your order status</a>
+
+<header class="nav" id="top">
+  <div class="nav-in">
+    <button class="nav-icon nav-menu" type="button" aria-expanded="false" aria-controls="mnav" aria-label="Open menu" data-js-only>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+    <a class="brand" href="#top" aria-label="pizzatime, back to top">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M5 9.5C10.6 4.4 21.4 4.4 27 9.5L16 28Z" fill="#fbf2e3"/><path d="M8.2 11.6c4.5-3 11.1-3 15.6 0L16 24.8Z" fill="#f6c96e"/><circle cx="13" cy="13.6" r="1.9" fill="#e5502f"/><circle cx="18.6" cy="13.2" r="1.7" fill="#e5502f"/><circle cx="16" cy="18.4" r="1.6" fill="#e5502f"/><path d="M4.2 8.6C10.3 2.9 21.7 2.9 27.8 8.6" fill="none" stroke="#fbf2e3" stroke-width="2.4" stroke-linecap="round"/></svg>
+      <span>pizzatime</span>
+    </a>
+    <nav class="nav-links" id="mnav" aria-label="Main">
+      <ul>
+        <li><a href="#tracker" aria-current="page">Track order</a></li>
+        <li><a href="#order">Your order</a></li>
+        <li><a href="#stages">How it works</a></li>
+        <li><a href="#help">Help</a></li>
+      </ul>
+    </nav>
+    <button class="nav-cta" type="button" data-action="reorder">Order again</button>
+    <div class="cart-wrap" data-js-only>
+      <button class="nav-icon nav-cart" type="button" aria-expanded="false" aria-controls="cart-pop" aria-label="Cart, empty">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2.2l2.3 10.4a1.6 1.6 0 0 0 1.6 1.3h7.7a1.6 1.6 0 0 0 1.6-1.2L20 8H6.3"/><circle cx="9.5" cy="19.5" r="1.4"/><circle cx="16.5" cy="19.5" r="1.4"/></svg>
+        <span class="cart-n" hidden>0</span>
+      </button>
+      <div class="cart-pop" id="cart-pop" hidden>
+        <p class="cart-empty">Your cart is empty.</p>
+        <button class="btn btn-tomato" type="button" data-action="reorder">Order the same again</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero" id="tracker" aria-labelledby="tracker-title" tabindex="-1" data-hero>
+    <div class="scene" data-scene role="img" aria-label="Map of your delivery">
+      <noscript><p class="noscript">Your pizza is on the way: about 12 minutes. Turn on JavaScript to watch it on the live map.</p></noscript>
+    </div>
+
+    <h1 class="title" id="tracker-title"><span class="t1">Delivery</span> <span class="t2">tracker</span></h1>
+
+    <div class="tod glass" role="radiogroup" aria-label="Time of day in the scene" data-js-only>
+      <label title="Auto: follows your clock"><input type="radio" name="tod" value="auto" checked aria-label="Auto, follows your clock"><span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg><b>Auto</b></span></label>
+      <label title="Day"><input type="radio" name="tod" value="day" aria-label="Day"><span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7"/></svg><b>Day</b></span></label>
+      <label title="Golden hour"><input type="radio" name="tod" value="golden" aria-label="Golden hour"><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17h18M6.5 17a5.5 5.5 0 0 1 11 0M12 6.5v2M5.2 9.7l1.4 1.4M18.8 9.7l-1.4 1.4M4 21h16"/></svg><b>Golden</b></span></label>
+      <label title="Night"><input type="radio" name="tod" value="night" aria-label="Night"><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 14.5A8 8 0 0 1 9.5 4.5a8 8 0 1 0 10 10Z"/></svg><b>Night</b></span></label>
+    </div>
+
+    <div class="eta" data-eta>
+      <span class="eta-k"><i class="live-dot" aria-hidden="true"></i><span data-eta-k>Live ETA</span></span>
+      <b class="eta-v" data-eta-v>12 min</b>
+    </div>
+
+    <div class="demo glass" role="group" aria-labelledby="demo-label" data-js-only>
+      <span class="demo-tag" id="demo-label">Demo time</span>
+      <button class="demo-play" type="button" data-action="play" aria-label="Pause the demo">
+        <svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="5" width="3.6" height="14" rx="1.2"/><rect x="13.9" y="5" width="3.6" height="14" rx="1.2"/></svg>
+        <svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.2v13.6a.8.8 0 0 0 1.2.7l10.6-6.8a.8.8 0 0 0 0-1.4L9.2 4.5A.8.8 0 0 0 8 5.2Z"/></svg>
+        <svg class="i-replay" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3M4.5 4v4.5H9" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="scrub">
+        <label class="sr-only" for="scrub">Order time</label>
+        <input id="scrub" type="range" min="0" max="31" step="0.05" value="19">
+        <div class="scrub-marks" aria-hidden="true"><i style="--at:0"></i><i style="--at:.2903"></i><i style="--at:.3548"></i><i style="--at:1"></i></div>
+      </div>
+      <span class="demo-clock" data-clock aria-hidden="true">18:49</span>
+      <div class="speed" role="radiogroup" aria-label="Demo speed">
+        <label><input type="radio" name="speed" value="1"><span>1×</span></label>
+        <label><input type="radio" name="speed" value="10" checked><span>10×</span></label>
+        <label><input type="radio" name="speed" value="60"><span>60×</span></label>
+      </div>
+    </div>
+
+    <aside class="panel glass" data-panel aria-label="Order status">
+      <button class="sheet-grab" type="button" aria-expanded="false" aria-controls="panel-more" data-js-only><span class="grab-bar" aria-hidden="true"></span><span class="grab-l">Order details</span></button>
+      <p class="order-line"><span class="pill-live"><i class="live-dot" aria-hidden="true"></i>Live</span> Order <b data-order-no>#PT-48213</b><span class="sheet-eta" aria-hidden="true" data-sheet-eta>12 min</span></p>
+      <h2 class="status-h" data-status-h>Marco is on the way</h2>
+      <p class="status-sub" data-status-sub>2.4 km away · arriving around 19:01</p>
+
+      <ol class="steps" data-steps aria-label="Order progress">
+        <li data-step="baking"><span class="knob" aria-hidden="true"></span><span class="step-l">Baking</span></li>
+        <li data-step="boxed"><span class="knob" aria-hidden="true"></span><span class="step-l">Boxing</span></li>
+        <li data-step="onway" aria-current="step"><span class="knob" aria-hidden="true"></span><span class="step-l">On the way</span></li>
+        <li data-step="delivered"><span class="knob" aria-hidden="true"></span><span class="step-l">Delivered</span></li>
+        <li class="track" aria-hidden="true"><span class="fill" data-fill></span></li>
+      </ol>
+
+      <div class="primary-wrap" data-js-only>
+        <button class="btn btn-basil btn-primary" type="button" data-primary>Message Marco</button>
+      </div>
+
+      <div class="panel-more" id="panel-more">
+        <ul class="events" data-events aria-label="Order timeline"></ul>
+        <div class="courier" data-courier>
+          <span class="avatar" aria-hidden="true"><svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="24" fill="#fbe2d6"/><path d="M8 44c2-9 8.6-13 16-13s14 4 16 13" fill="#dc452b"/><circle cx="24" cy="20" r="8.5" fill="#f1c29a"/><path d="M15 19.5c0-6 4-9.6 9-9.6s9 3.6 9 9.6c-3-1.6-6-2.4-9-2.4s-6 .8-9 2.4Z" fill="#d63a24"/><path d="M31.5 18.6h6" stroke="#d63a24" stroke-width="2.6" stroke-linecap="round"/></svg></span>
+          <div class="courier-t">
+            <p class="courier-n" data-courier-n>Marco R. <span class="rating" aria-label="rated 4.9 out of 5">★ 4.9</span></p>
+            <p class="courier-s" data-courier-s>Red scooter · PT 12</p>
+          </div>
+          <div class="courier-a">
+            <a class="btn btn-ghost" data-call href="tel:+13125550134"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 3.5h2.6l1.4 4.2-2 1.4a12 12 0 0 0 6.3 6.3l1.4-2 4.2 1.4v2.6A2.4 2.4 0 0 1 18.1 20 15.6 15.6 0 0 1 4 5.9a2.4 2.4 0 0 1 2.6-2.4Z"/></svg><span data-call-l>Call</span></a>
+            <button class="btn btn-ghost" type="button" data-action="message" data-js-only><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16v10.5H9.5L5 20v-4H4Z"/></svg><span>Message</span></button>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </section>
+
+  <section class="stages" id="stages" aria-labelledby="stages-h">
+    <div class="sec-head">
+      <h2 id="stages-h">Every step, live</h2>
+      <p>Tap a stage to watch it again on the map.</p>
+    </div>
+    <ul class="tiles" data-tiles>
+      <li><button type="button" class="tile" data-goto="baking" aria-describedby="tile-baking-d"><span class="tile-art" data-art="baking"><img src="assets/tiles/baking.webp" alt="" width="600" height="400" loading="lazy" decoding="async"></span><span class="tile-cap"><b>Baking</b> — <span id="tile-baking-d">the oven glows</span></span></button></li>
+      <li><button type="button" class="tile" data-goto="boxed" aria-describedby="tile-boxed-d"><span class="tile-art" data-art="boxed"><img src="assets/tiles/boxed.webp" alt="" width="600" height="400" loading="lazy" decoding="async"></span><span class="tile-cap"><b>Boxed</b> — <span id="tile-boxed-d">the lid folds shut</span></span></button></li>
+      <li><button type="button" class="tile" data-goto="onway" aria-describedby="tile-onway-d"><span class="tile-art" data-art="onway"><img src="assets/tiles/onway.webp" alt="" width="600" height="400" loading="lazy" decoding="async"></span><span class="tile-cap"><b>On the way</b> — <span id="tile-onway-d">scooter rides the map</span></span></button></li>
+      <li><button type="button" class="tile" data-goto="delivered" aria-describedby="tile-delivered-d"><span class="tile-art" data-art="delivered"><img src="assets/tiles/delivered.webp" alt="" width="600" height="400" loading="lazy" decoding="async"></span><span class="tile-cap"><b>Delivered</b> — <span id="tile-delivered-d">door opens, confetti</span></span></button></li>
+    </ul>
+  </section>
+
+  <section class="order" id="order" aria-labelledby="order-h">
+    <div class="sec-head">
+      <h2 id="order-h">Your order</h2>
+      <p><span data-order-no>#PT-48213</span> · placed <span data-placed>18:30</span></p>
+    </div>
+    <div class="order-grid">
+      <div class="card items-card">
+        <h3>Items</h3>
+        <ul class="items" data-items></ul>
+        <dl class="totals" data-totals></dl>
+      </div>
+      <div class="card">
+        <h3>Delivering to</h3>
+        <p class="addr" data-addr>Flat 3, 27 Basil Lane</p>
+        <p class="muted" data-addr-note>Ring the green door. Buzzer 3.</p>
+        <h3 class="mt">Paid</h3>
+        <p data-paid>Card ending 4242 · tip included</p>
+      </div>
+      <div class="card" id="help">
+        <h3>Need help?</h3>
+        <p class="muted">pizzatime Mill Street is making your order.</p>
+        <p><a class="link" href="tel:+13125550188">+1 312 555 0188</a></p>
+        <p class="muted small">Open until 23:00 · usually answers in under a minute</p>
+        <button class="btn btn-tomato btn-block" type="button" data-action="track-another" data-js-only>Track another order</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <p><b>pizzatime</b> is a fictional brand made for a component demo by Code with Ulvi · domvybe.com. No real orders, no data leaves your browser.</p>
+</footer>
+
+<div class="sr-only" aria-live="polite" aria-atomic="true" data-announce></div>
+<div class="toast" role="status" aria-live="polite" data-toast hidden></div>
+
+<div class="scrim" data-scrim hidden></div>
+<dialog class="sheet" id="msg-dialog" aria-labelledby="msg-h" aria-modal="true">
+  <form method="dialog" class="sheet-in" data-msg-form>
+    <h2 id="msg-h">Message <span data-courier-first>Marco</span></h2>
+    <fieldset class="quick">
+      <legend class="sr-only">Quick replies</legend>
+      <label><input type="radio" name="quick" value="Please leave it at the door." checked><span>Leave it at the door</span></label>
+      <label><input type="radio" name="quick" value="Please ring the bell, I'm in."><span>Ring the bell</span></label>
+      <label><input type="radio" name="quick" value="I'm coming down now."><span>I'm coming down</span></label>
+    </fieldset>
+    <label class="field"><span>Or write your own <span class="muted">(optional)</span></span><textarea name="note" rows="2" maxlength="140" placeholder="Gate code is 2468"></textarea></label>
+    <p class="muted small">Demo: nothing is sent anywhere.</p>
+    <div class="sheet-a"><button class="btn btn-ghost" value="cancel" type="submit" formnovalidate>Cancel</button><button class="btn btn-basil" value="send" type="submit">Send</button></div>
+  </form>
+</dialog>
+
+<dialog class="sheet" id="track-dialog" aria-labelledby="track-h" aria-modal="true">
+  <form class="sheet-in" data-track-form novalidate>
+    <h2 id="track-h">Track another order</h2>
+    <label class="field" for="track-no"><span>Order number</span></label>
+    <input class="input" id="track-no" name="no" autocomplete="off" inputmode="text" placeholder="PT-48257" aria-describedby="track-hint track-err" spellcheck="false">
+    <p class="muted small" id="track-hint">It's in your confirmation email. Try PT-48257 or PT-48190.</p>
+    <p class="err" id="track-err" role="alert" hidden></p>
+    <div class="sheet-a"><button class="btn btn-ghost" type="button" data-close>Cancel</button><button class="btn btn-tomato" type="submit">Track</button></div>
+  </form>
+</dialog>
+
+<dialog class="sheet" id="rate-dialog" aria-labelledby="rate-h" aria-modal="true">
+  <form method="dialog" class="sheet-in" data-rate-form>
+    <h2 id="rate-h">How was your pizza?</h2>
+    <fieldset class="stars">
+      <legend class="sr-only">Rating</legend>
+      <input type="radio" id="st5" name="stars" value="5" checked><label for="st5" title="5 stars"><span class="sr-only">5 stars</span>★</label>
+      <input type="radio" id="st4" name="stars" value="4"><label for="st4" title="4 stars"><span class="sr-only">4 stars</span>★</label>
+      <input type="radio" id="st3" name="stars" value="3"><label for="st3" title="3 stars"><span class="sr-only">3 stars</span>★</label>
+      <input type="radio" id="st2" name="stars" value="2"><label for="st2" title="2 stars"><span class="sr-only">2 stars</span>★</label>
+      <input type="radio" id="st1" name="stars" value="1"><label for="st1" title="1 star"><span class="sr-only">1 star</span>★</label>
+    </fieldset>
+    <div class="sheet-a"><button class="btn btn-ghost" value="cancel" type="submit">Not now</button><button class="btn btn-basil" value="rate" type="submit">Send rating</button></div>
+  </form>
+</dialog>
+</body>
+</html>
